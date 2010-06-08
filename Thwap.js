@@ -68,10 +68,10 @@ Thwap.prototype = {
 									
 									var im1 = 1 / obj.mass;
 									var im2 = 1 / obj2.mass;
-									if(obj.behavior == TObject.FREE)
-										obj.position.add( mtd.copy().multiplyScalar(im1 / (im1 + im2)) );
-									if(obj2.behavior == TObject.FREE)
-										obj2.position.subtract( mtd.copy().multiplyScalar( im2 / (im1 + im2) ) );
+									//if(obj.behavior == TObject.FREE)
+									//	obj.position.add( mtd.copy().multiplyScalar(im1 / (im1 + im2)) );
+									//if(obj2.behavior == TObject.FREE)
+									//	obj2.position.subtract( mtd.copy().multiplyScalar( im2 / (im1 + im2) ) );
 									
 									var v = obj.v.copy().subtract(obj2.v);
 									var vn = v.dot( mtd.normalize() );
@@ -83,9 +83,14 @@ Thwap.prototype = {
 									var impulse = mtd.copy().multiplyScalar(i);
 									
 									if(obj.behavior == TObject.FREE)
-										obj.v.add(impulse.copy().multiplyScalar(im1));
+										obj.v.multiplyScalar(-1);
 									if(obj2.behavior == TObject.FREE)
-										obj2.v.subtract(impulse.copy().multiplyScalar(im2));
+										obj2.v.multiplyScalar(-1);
+									
+									//if(obj.behavior == TObject.FREE)
+									//	obj.v.add(impulse.copy().multiplyScalar(im1));
+									//if(obj2.behavior == TObject.FREE)
+									//	obj2.v.subtract(impulse.copy().multiplyScalar(im2));
 								}
 							}
 						
