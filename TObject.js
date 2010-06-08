@@ -11,6 +11,7 @@ function TObject(type){
 	this.a = new TVector(0, 0, 0);
 	this.v = new TVector(0, 0, 0);
 	this.gridPosition = {col: 0, row: 0};
+	this.id = 0; // this is assigned when added to the world
 	
 	switch(type){
 		case TObject.CIRCLE:
@@ -26,7 +27,7 @@ function TObject(type){
 	// default to free movement
 	this.behavior = TObject.FREE;
 	this.drag = 0.95; // default drag or friction
-	this.mass = 100; // default mass to 100 "somethings"
+	this.mass = 10; // default mass to 100 "somethings"
 }
 
 TObject.prototype.setPosition = function(){
@@ -61,6 +62,7 @@ TObject.prototype.applyVelocity = function(){
 	
 	// could also be:
 	// this.position.add(this.v);
+	
 	this.updateWorldGridLocation();
 };
 
@@ -124,6 +126,30 @@ TObject.prototype.toVectorArray = function(){
 				this.position.y + (this.dimensions.y / 2),
 				this.position.z - (this.dimensions.z / 2));
 			return points;
+			break;
+	}
+};
+
+// returns an array of two points, the top left, and bottom right, defining the box
+TObject.prototype.getAABB = function(){
+	switch(this.type){
+		case TObject.CIRCLE:
+			return [
+				new TVector(this.position.x - this.radius, 
+					this.position.y - this.radius, 
+					this.position.z - this.radius),
+				new TVector(this.position.x + this.radius, 
+					this.position.y + this.radius, 
+					this.position.z + this.radius)];
+			break;
+		case TObject.RECTANGLE:
+			return [
+				new TVector(this.position.x - (this.dimensions.x / 2),
+					this.position.y - (this.dimensions.y / 2),
+					this.position.z - (this.dimensions.z / 2)),
+				new TVector(this.position.x + (this.dimensions.x / 2),
+					this.position.y + (this.dimensions.y / 2),
+					this.position.z - (this.dimensions.z / 2))];
 			break;
 	}
 }

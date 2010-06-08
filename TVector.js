@@ -5,14 +5,26 @@ function TVector(x, y, z){
 }
 
 TVector.prototype = {
-	copy: function(tVector){
-		return new TVector( tVector.x, tVector.y, tVector.z );
+	copy: function(){
+		return new TVector( this.x, this.y, this.z );
 	}
 	, add: function(tVector){
 		this.x += tVector.x;
 		this.y += tVector.y;
 		this.z += tVector.z;
 		return this;
+	}
+	, subtract: function(tVector){
+		this.x -= tVector.x;
+		this.y -= tVector.y;
+		this.z -= tVector.z;
+		return this;
+	}
+	, magnitude: function(){
+		return Math.sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
+	}
+	, dot: function(tVector){
+		return (this.x*tVector.x) + (this.y*tVector.y) + (this.z*tVector.z);
 	}
 	, distanceTo: function(){
 		switch(arguments.length){
@@ -41,6 +53,10 @@ TVector.prototype = {
 		this.y *= scalar;
 		this.z *= scalar;
 		return this;
+	}
+	, normalize: function(){
+		var mag = this.magnitude();
+		return new TVector( this.x / mag, this.y / mag, this.z / mag );
 	}
 	, getPerpendicularTo: function(tVector){
 		if(this.x != tVector.x){

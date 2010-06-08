@@ -42,8 +42,8 @@
 				THWAP.grid.drawGrid(ctx);
 				
 				THWAP.step();
-				
-				for(var o in THWAP.objects){
+				var l = THWAP.objects.length;
+				for(var o = 0; o < l; o++){
 					var obj = THWAP.objects[o];
 					switch(obj.type){
 						case TObject.CIRCLE:
