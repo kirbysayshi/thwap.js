@@ -62,35 +62,34 @@ Thwap.prototype = {
 									
 									// do more intense calc here depending on shape
 									
-									var delta = obj.position.copy().subtract(obj2.position);
-									var d = delta.magnitude();
-									var mtd = delta.copy().multiplyScalar( (( (obj.radius || (obj.dimensions.x / 2)) + (obj2.radius || (obj2.dimensions.x / 2)) ) - d) / d );
+									var x = obj.position.copy().subtract(obj2.position);
+									x.normalize();
 									
-									var im1 = 1 / obj.mass;
-									var im2 = 1 / obj2.mass;
-									//if(obj.behavior == TObject.FREE)
-									//	obj.position.add( mtd.copy().multiplyScalar(im1 / (im1 + im2)) );
-									//if(obj2.behavior == TObject.FREE)
-									//	obj2.position.subtract( mtd.copy().multiplyScalar( im2 / (im1 + im2) ) );
+									var v1 = obj.v.copy();
+									var x1 = x.dot(v1);
 									
-									var v = obj.v.copy().subtract(obj2.v);
-									var vn = v.dot( mtd.normalize() );
+									var v1x = x.copy().multiplyScalar(x1);
+									var v1y = v1.copy().subtract(v1x);
 									
-									if(vn > 0.0) break; // should this be return?
+									var m1 = obj.mass;
+									x.multiplyScalar(-1);
 									
-									// the second 1 is restitution
-									var i = ( -(1 + 0.85) * vn ) / (im1 + im2);
-									var impulse = mtd.copy().multiplyScalar(i);
+									var v2 = obj2.v.copy();
+									var x2 = x.dot(v2);
+									
+									var v2x = x.copy().multiplyScalar(x2);
+									var v2y = v2.copy().subtract(v2x);
+									
+									var m2 = obj2.mass;
+									var combinedMass = m1 + m2;
+									
+									var newVelA = v1x.copy().multiplyScalar( ((m1 - m2) / combinedMass) ).add( v2x.copy().multiplyScalar( ((2 * m2) / combinedMass) )).add(v1y);
+									var newVelB = v1x.copy().multiplyScalar( ((2 * m1) / combinedMass) ).add( v2x.copy().multiplyScalar( ((m2 - m1) / combinedMass) )).add(v2y);
 									
 									if(obj.behavior == TObject.FREE)
-										obj.v.multiplyScalar(-1);
+										obj.v = newVelA;
 									if(obj2.behavior == TObject.FREE)
-										obj2.v.multiplyScalar(-1);
-									
-									//if(obj.behavior == TObject.FREE)
-									//	obj.v.add(impulse.copy().multiplyScalar(im1));
-									//if(obj2.behavior == TObject.FREE)
-									//	obj2.v.subtract(impulse.copy().multiplyScalar(im2));
+										obj2.v = newVelB;
 								}
 							}
 						

@@ -9,7 +9,7 @@
 		</style>
 	</head>
 	<body id="index" onload="">
-		<canvas id="soldat-stage" height="300px" width="400px"></canvas>
+		<canvas id="soldat-stage" height="800px" width="400px"></canvas>
 		<div id="fpsMeter"></div>
 		<script type="text/javascript" charset="utf-8" src='../FPSMonitor.js'></script>
 		<script type="text/javascript" charset="utf-8" src='TVector.js'></script>
@@ -26,12 +26,12 @@
 			
 			var FPSM = new FPSMonitor(30);
 			var fps = document.getElementById('fpsMeter');
-			THWAP = new Thwap(new TVector(400, 300, 0), new TVector(400, 300, 0), 50);
+			THWAP = new Thwap(new TVector(400, 800, 0), new TVector(400, 800, 0), 50);
 			THWAP.addWorldForce('earth-like gravity', new TVector(0, 0.1, 0));
 			
-			var circle = new TObject(TObject.CIRCLE, 10, new TVector(245,0,0));
-			var rect = new TObject(TObject.RECTANGLE, new TVector(30, 10, 0), new TVector(205, 20, 0));
-			var floor = new TObject(TObject.RECTANGLE, new TVector(250, 5, 0), new TVector(200, 230, 0));
+			var circle = new TObject(TObject.CIRCLE, 10, new TVector(245,400,0));
+			var rect = new TObject(TObject.RECTANGLE, new TVector(30, 10, 0), new TVector(205, 420, 0));
+			var floor = new TObject(TObject.RECTANGLE, new TVector(250, 5, 0), new TVector(200, 630, 0));
 			floor.behavior = TObject.FIXED;
 			THWAP.add(circle);
 			THWAP.add(rect);
