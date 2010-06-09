@@ -27,7 +27,7 @@ function TObject(type){
 	// default to free movement
 	this.behavior = TObject.FREE;
 	this.drag = 0.95; // default drag or friction
-	this.mass = 10; // default mass to 100 "somethings"
+	this.mass = 10; // default mass to 10 "somethings"
 }
 
 TObject.prototype.setPosition = function(){
@@ -153,6 +153,53 @@ TObject.prototype.getAABB = function(){
 			break;
 	}
 }
+
+TObject.prototype.testCollision = function(obj2){
+	var oAABB = this.getAABB();
+	var o2AABB = obj2.getAABB();
+
+	// perform basic aabb test
+	if(oAABB[0].x < o2AABB[1].x && oAABB[1].x > o2AABB[0].x
+	&& oAABB[0].y < o2AABB[1].y && oAABB[1].y > o2AABB[0].y){
+		//console.log("AABB INTERSECT");
+		
+		// do more intense calc here depending on shape
+		
+		this.handleCollision(obj2);
+	}
+};
+
+TObject.prototype.handleCollision = function(obj2){
+	var delta = this.position.copy().subtract(obj2.position);
+	var d = delta.magnitude();
+	var mtd = delta.copy().multiplyScalar( (( (this.radius || (this.dimensions.x / 2)) + (obj2.radius || (obj2.dimensions.x / 2)) ) - d) / d );
+	
+	var im1 = 1 / this.mass;
+	var im2 = 1 / obj2.mass;
+	if(this.behavior == TObject.FREE)
+		this.position.add( mtd.copy().multiplyScalar(im1 / (im1 + im2)) );
+	if(obj2.behavior == TObject.FREE)
+		obj2.position.subtract( mtd.copy().multiplyScalar( im2 / (im1 + im2) ) );
+	
+	var v = this.v.copy().subtract(obj2.v);
+	var vn = v.dot( mtd.normalize() );
+	
+	if(vn > 0.0) return; // should this be return?
+	
+	// the second 1 is restitution
+	var i = ( -(1 + 0.85) * vn ) / (im1 + im2);
+	var impulse = mtd.copy().multiplyScalar(i).multiplyScalar(0.01); // the 0.01 is to tone things down a bit
+	
+	if(this.behavior == TObject.FREE)
+		this.v.multiplyScalar(-1);
+	if(obj2.behavior == TObject.FREE)
+		obj2.v.multiplyScalar(-1);
+	
+	if(this.behavior == TObject.FREE)
+		this.v.add(impulse.copy().multiplyScalar(im1));
+	if(obj2.behavior == TObject.FREE)
+		obj2.v.subtract(impulse.copy().multiplyScalar(im2));
+};
 
 TObject.CIRCLE = "circle";
 TObject.RECTANGLE = "rectangle";

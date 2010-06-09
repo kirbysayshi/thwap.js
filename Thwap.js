@@ -38,62 +38,32 @@ Thwap.prototype = {
 		var colCount = this.grid.colCount;
 		var rowCount = this.grid.rowCount;
 		var cells = this.grid.cells;
-		// TODO: add a lookup table of paired objects, to prevent checking twice
 		
 		for(var c = 0; c < colCount; c++){
 			for(var r = 0; r < rowCount; r++){
-				var cell = cells[c][r];
-				// loop through objects in cell, test for collision?
 				
-				var l = cell.objects.length;
+				// nearby canidates for collision tests
+				var canidates = [];
+				
+				canidates = canidates.concat(cells[c][r].objects);
+				if(cells[c][r-1] !== undefined) canidates = canidates.concat(cells[c][r-1].objects);
+				if(cells[c][r+1] !== undefined) canidates = canidates.concat(cells[c][r+1].objects);
+				if(cells[c-1] !== undefined) canidates = canidates.concat(cells[c-1][r].objects);
+				if(cells[c+1] !== undefined) canidates = canidates.concat(cells[c+1][r].objects);
+				
+				var l = canidates.length;
 				for(var o = 0; o < l; o++){
-					var obj = cell.objects[o];
+					var obj = canidates[o];
 					if(obj !== undefined){ // arrays are padded for ids...
-						var oAABB = obj.getAABB();
+						
+						// test all objs in this cell
 						for(var o2 = o + 1; o2 < l; o2++){
-							var obj2 = cell.objects[o2];
-							if(obj2 !== undefined){
-								var o2AABB = obj2.getAABB();
-						
-								// perform basic aabb test
-								if(oAABB[0].x < o2AABB[1].x && oAABB[1].x > o2AABB[0].x
-								&& oAABB[0].y < o2AABB[1].y && oAABB[1].y > o2AABB[0].y){
-									console.log("AABB INTERSECT");
-									
-									// do more intense calc here depending on shape
-									
-									var x = obj.position.copy().subtract(obj2.position);
-									x.normalize();
-									
-									var v1 = obj.v.copy();
-									var x1 = x.dot(v1);
-									
-									var v1x = x.copy().multiplyScalar(x1);
-									var v1y = v1.copy().subtract(v1x);
-									
-									var m1 = obj.mass;
-									x.multiplyScalar(-1);
-									
-									var v2 = obj2.v.copy();
-									var x2 = x.dot(v2);
-									
-									var v2x = x.copy().multiplyScalar(x2);
-									var v2y = v2.copy().subtract(v2x);
-									
-									var m2 = obj2.mass;
-									var combinedMass = m1 + m2;
-									
-									var newVelA = v1x.copy().multiplyScalar( ((m1 - m2) / combinedMass) ).add( v2x.copy().multiplyScalar( ((2 * m2) / combinedMass) )).add(v1y);
-									var newVelB = v1x.copy().multiplyScalar( ((2 * m1) / combinedMass) ).add( v2x.copy().multiplyScalar( ((m2 - m1) / combinedMass) )).add(v2y);
-									
-									if(obj.behavior == TObject.FREE)
-										obj.v = newVelA;
-									if(obj2.behavior == TObject.FREE)
-										obj2.v = newVelB;
-								}
+							var obj2 = canidates[o2];
+							if(obj2 !== undefined && obj2.name != obj.name){
+								obj.testCollision(obj2);
 							}
-						
 						}
+						
 					}
 					
 				}
@@ -163,7 +133,6 @@ Thwap.prototype = {
 	, getNextUniqueId: function(){
 		return (this.nextId += 1) - 1;
 	}
-	
 };
 
 // Array Remove - By John Resig (MIT Licensed)

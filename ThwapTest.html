@@ -26,16 +26,42 @@
 			
 			var FPSM = new FPSMonitor(30);
 			var fps = document.getElementById('fpsMeter');
-			THWAP = new Thwap(new TVector(400, 800, 0), new TVector(400, 800, 0), 50);
+
+			THWAP = new Thwap(new TVector(400, 300, 0), new TVector(400, 300, 0), 15);
 			THWAP.addWorldForce('earth-like gravity', new TVector(0, 0.1, 0));
 			
-			var circle = new TObject(TObject.CIRCLE, 10, new TVector(245,400,0));
-			var rect = new TObject(TObject.RECTANGLE, new TVector(30, 10, 0), new TVector(205, 420, 0));
-			var floor = new TObject(TObject.RECTANGLE, new TVector(250, 5, 0), new TVector(200, 630, 0));
-			floor.behavior = TObject.FIXED;
+			var circle = new TObject(TObject.CIRCLE, 30, new TVector(245,0,0));
+			var rect = new TObject(TObject.CIRCLE, 15, new TVector(33, 20, 0));
+			var rect2 = new TObject(TObject.CIRCLE, 20, new TVector(160, 5, 0));
+			circle.mass = 50000;
+			rect2.mass = 1;
 			THWAP.add(circle);
 			THWAP.add(rect);
-			THWAP.add(floor);
+			THWAP.add(rect2);
+			
+			//var floor = new TObject(TObject.RECTANGLE, new TVector(300, 10, 0), new TVector(200, 190, 0));
+			//floor.behavior = TObject.FIXED;
+			//floor.mass = 10000;
+			//THWAP.add(floor);
+			
+			//for(var b = 20; b < 390; b += 25){
+			//	var temp = new TObject(TObject.CIRCLE, 10, new TVector(b, 20, 0));
+			//	temp.mass = 20000;
+			//	THWAP.add(temp);
+			//}
+			
+			var floorCs = [];
+			for(var i = 10; i < 390; i += 20){
+				var temp = new TObject(TObject.CIRCLE, 10, new TVector(i, 240, 0));
+				temp.behavior = TObject.FIXED;
+				temp.mass = 100000;
+				THWAP.add(temp);
+				floorCs.push(temp);
+			}
+			
+			//
+			
+			
 			
 			var intVal = setInterval(function(){
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -89,11 +115,11 @@
 				}
 				
 				if(e.keyCode == 68) { // D
-					circle.applyImpulseForce(new TVector(0.2, 0, 0));
+					circle.applyImpulseForce(new TVector(1, 0, 0));
 				}
 				
 				if(e.keyCode == 65) { // A
-					circle.applyImpulseForce(new TVector(-0.2, 0, 0));
+					circle.applyImpulseForce(new TVector(-1, 0, 0));
 				}
 				
 			}, false);
