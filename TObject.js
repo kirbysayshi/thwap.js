@@ -195,10 +195,14 @@ TObject.prototype.handleCollision = function(obj2){
 	if(obj2.behavior == TObject.FREE)
 		obj2.v.multiplyScalar(-1);
 	
-	if(this.behavior == TObject.FREE)
+	if(this.behavior == TObject.FREE){
 		this.v.add(impulse.copy().multiplyScalar(im1));
-	if(obj2.behavior == TObject.FREE)
+		this.updateWorldGridLocation();
+	}
+	if(obj2.behavior == TObject.FREE){
 		obj2.v.subtract(impulse.copy().multiplyScalar(im2));
+		obj2.updateWorldGridLocation();
+	}
 };
 
 TObject.CIRCLE = "circle";

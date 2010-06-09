@@ -34,6 +34,8 @@ TGrid.prototype = {
 		}
 	}
 	, drawGrid: function(ctx){
+		ctx.strokeStyle = '#CCCCCCC';
+		ctx.strokeWidth = 0.5;
 		ctx.beginPath();
 		for (var i = 0; i < this.colCount; i++) {
 			ctx.moveTo(i * this.tilesize, 0);
