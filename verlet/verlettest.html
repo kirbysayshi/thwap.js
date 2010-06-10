@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<title>Thwap Test</title>
+		
+		<style type="text/css">
+		#soldat-stage { border: 1px solid #CCCCCC; }
+		</style>
+	</head>
+	<body id="index" onload="">
+		<canvas id="soldat-stage" height="300px" width="400px"></canvas>
+		<div id="fpsMeter"></div>
+		<script type="text/javascript" charset="utf-8" src='../../FPSMonitor.js'></script>
+		<script type="text/javascript" charset="utf-8" src='Vector3d.js'></script>
+		<script type="text/javascript" charset="utf-8" src='Edge.js'></script>
+		<script type="text/javascript" charset="utf-8" src='Math.js'></script>
+		<script type="text/javascript" charset="utf-8" src='MinMax.js'></script>
+		<script type="text/javascript" charset="utf-8" src='Physics.js'></script>
+		<script type="text/javascript" charset="utf-8" src='PhysicsBody.js'></script>
+		<script type="text/javascript" charset="utf-8" src='Vertex.js'></script>
+		<script type="text/javascript" charset="utf-8" src='Main.js'></script>
+		
+		<script type="text/javascript">
+		window.onload = function(){
+			var canvas = document.getElementById("soldat-stage");
+			var ctx = canvas.getContext('2d');
+			
+			var FPSM = new FPSMonitor(30);
+			var fps = document.getElementById('fpsMeter');
+			
+			var SCREEN_WIDTH = 400, SCREEN_HEIGHT = 300;
+			world = new Physics(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0, 1, 15);
+			
+			//for( var X = 20; X < SCREEN_WIDTH; X += 100 ) {
+			//	for( var Y = 50; Y < SCREEN_HEIGHT - 50; Y += 100 ) {
+			//		new PhysicsBody(world, 1).createBox( world, X, Y, 50, 50 ); //Create a few boxes
+			//	}
+			//}
+			
+			for( var X = 50; X < SCREEN_WIDTH - 50; X += 130 ) {
+				var Body = new PhysicsBody(world, 1); //Create a few triangles. Only boxes would get boring, right?
+            
+				var V1 = new Vertex( world, Body, X      , 45, 0 );
+				var V2 = new Vertex( world, Body, X +  50, 1 , 0 );
+				var V3 = new Vertex( world, Body, X + 100, 45, 0 );
+            
+				new Edge( world, Body, V1, V2 );
+				new Edge( world, Body, V2, V3 );
+				new Edge( world, Body, V3, V1 );
+			}
+			
+			new PhysicsBody(world, 1).createBox( world, 20, 20, 50, 50 ); //Create a few boxes
+			new PhysicsBody(world, 1).createBox( world, 30, 80, 50, 50 ); //Create a few boxes
+			new PhysicsBody(world, 1).createBox( world, 30, 100, 50, 50 ); //Create a few boxes
+			
+			var intVal = setInterval(function(){
+				world.update();
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				world.render(ctx);
+				fps.innerHTML = FPSM.check();
+			}, 33);
+			
+			window.addEventListener('keydown', function(e){
+				if(e.keyCode == 17) {
+					clearInterval(intVal);
+					console.log("execution stopped");
+				}
+				
+				if(e.keyCode == 68) { // D
+					//circle.applyImpulseForce(new TVector(1, 0, 0));
+				}
+				
+				if(e.keyCode == 65) { // A
+					//circle.applyImpulseForce(new TVector(-1, 0, 0));
+				}
+				
+			}, false);
+			
+		};
+		</script>
+	</body>
+</html>
