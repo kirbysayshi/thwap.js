@@ -9,7 +9,7 @@
 		</style>
 	</head>
 	<body id="index" onload="">
-		<canvas id="soldat-stage" height="300px" width="400px"></canvas>
+		<canvas id="soldat-stage" height="600px" width="400px"></canvas>
 		<div id="fpsMeter"></div>
 		<script type="text/javascript" charset="utf-8" src='../../FPSMonitor.js'></script>
 		<script type="text/javascript" charset="utf-8" src='Vector3d.js'></script>
@@ -29,14 +29,14 @@
 			var FPSM = new FPSMonitor(30);
 			var fps = document.getElementById('fpsMeter');
 			
-			var SCREEN_WIDTH = 400, SCREEN_HEIGHT = 300;
+			var SCREEN_WIDTH = 400, SCREEN_HEIGHT = 600;
 			world = new Physics(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0, 1, 15);
 			
-			//for( var X = 20; X < SCREEN_WIDTH; X += 100 ) {
-			//	for( var Y = 50; Y < SCREEN_HEIGHT - 50; Y += 100 ) {
-			//		new PhysicsBody(world, 1).createBox( world, X, Y, 50, 50 ); //Create a few boxes
-			//	}
-			//}
+			for( var X = 60; X < SCREEN_WIDTH; X += 100 ) {
+				for( var Y = 100; Y < SCREEN_HEIGHT - 100; Y += 100 ) {
+					new PhysicsBody(world, 1).createBox( world, X, Y, 50, 20 ); //Create a few boxes
+				}
+			}
 			
 			for( var X = 50; X < SCREEN_WIDTH - 50; X += 130 ) {
 				var Body = new PhysicsBody(world, 1); //Create a few triangles. Only boxes would get boring, right?
@@ -50,9 +50,9 @@
 				new Edge( world, Body, V3, V1 );
 			}
 			
-			new PhysicsBody(world, 1).createBox( world, 20, 20, 50, 50 ); //Create a few boxes
-			new PhysicsBody(world, 1).createBox( world, 30, 80, 50, 50 ); //Create a few boxes
-			new PhysicsBody(world, 1).createBox( world, 30, 100, 50, 50 ); //Create a few boxes
+			new PhysicsBody(world, 100000).createBox( world, 10, 10, 50, 200 ); //Create a few boxes
+			//new PhysicsBody(world, 100).createBox( world, 30, 80, 50, 50 ); //Create a few boxes
+			//new PhysicsBody(world, 100).createBox( world, 30, 100, 50, 50 ); //Create a few boxes
 			
 			var intVal = setInterval(function(){
 				world.update();
