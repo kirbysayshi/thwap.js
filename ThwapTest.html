@@ -71,31 +71,33 @@
 				var l = THWAP.objects.length;
 				for(var o = 0; o < l; o++){
 					var obj = THWAP.objects[o];
-					switch(obj.type){
-						case TObject.CIRCLE:
-							ctx.beginPath();
-							ctx.arc( obj.position.x, obj.position.y, obj.radius, 0, Math.PI*2, false );
-							ctx.stroke();
-							// draw center
-							ctx.beginPath();
-							ctx.arc( obj.position.x, obj.position.y, 0.5, 0, Math.PI*2, false );
-							ctx.stroke();
-							break;
-						case TObject.RECTANGLE:
-							ctx.strokeRect(obj.position.x - (obj.dimensions.x/2), obj.position.y - (obj.dimensions.y/2), obj.dimensions.x, obj.dimensions.y);
-							// draw center
-							ctx.beginPath();
-							ctx.arc( obj.position.x, obj.position.y, 0.5, 0, Math.PI*2, false );
-							ctx.stroke();
-							break;
-					}
+					try{
+						switch(obj.type){
+							case TObject.CIRCLE:
+								ctx.beginPath();
+								ctx.arc( obj.position.x, obj.position.y, obj.radius, 0, Math.PI*2, false );
+								ctx.stroke();
+								// draw center
+								ctx.beginPath();
+								ctx.arc( obj.position.x, obj.position.y, 0.5, 0, Math.PI*2, false );
+								ctx.stroke();
+								break;
+							case TObject.RECTANGLE:
+								ctx.strokeRect(obj.position.x - (obj.dimensions.x/2), obj.position.y - (obj.dimensions.y/2), obj.dimensions.x, obj.dimensions.y);
+								// draw center
+								ctx.beginPath();
+								ctx.arc( obj.position.x, obj.position.y, 0.5, 0, Math.PI*2, false );
+								ctx.stroke();
+								break;
+						}
 					
-					// draw containing cell
-					ctx.lineWidth = 3.0;
-					ctx.strokeStyle = 'green';
-					ctx.strokeRect((obj.gridPosition.col*THWAP.grid.tilesize)+2, (obj.gridPosition.row*THWAP.grid.tilesize)+2, THWAP.grid.tilesize-4, THWAP.grid.tilesize-4);
-					ctx.strokeStyle = 'black';
-					ctx.lineWidth = 1.0;
+						// draw containing cell
+						ctx.lineWidth = 3.0;
+						ctx.strokeStyle = 'green';
+						ctx.strokeRect((obj.gridPosition.col*THWAP.grid.tilesize)+2, (obj.gridPosition.row*THWAP.grid.tilesize)+2, THWAP.grid.tilesize-4, THWAP.grid.tilesize-4);
+						ctx.strokeStyle = 'black';
+						ctx.lineWidth = 1.0;
+					} catch(e){}
 					
 				}
 				
