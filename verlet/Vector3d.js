@@ -8,17 +8,23 @@ Vector3d.prototype = {
 	copy: function(){
 		return new Vector3d( this.x, this.y, this.z );
 	}
-	, add: function(vector){
+	, plusEq: function(vector){
 		this.x += vector.x;
 		this.y += vector.y;
 		this.z += vector.z;
 		return this;
 	}
-	, subtract: function(vector){
+	, add: function(vector){
+		return this.copy().plusEq(vector);
+	}
+	, minusEq: function(vector){
 		this.x -= vector.x;
 		this.y -= vector.y;
 		this.z -= vector.z;
 		return this;
+	}
+	, subtract: function(vector){
+		return this.copy().minusEq(vector);
 	}
 	, magnitude: function(){
 		return Math.sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
@@ -48,7 +54,7 @@ Vector3d.prototype = {
 		} else
 			return false;
 	}
-	, multiply: function(scalar){
+	, scalar: function(scalar){
 		this.x *= scalar;
 		this.y *= scalar;
 		this.z *= scalar;
@@ -58,21 +64,14 @@ Vector3d.prototype = {
 		var mag = this.magnitude();
 		return new Vector3d( this.x / mag, this.y / mag, this.z / mag );
 	}
-	, getPerpendicularTo: function(vector){
-		if(this.x != vector.x){
-			var m = this.slope2DTo(vector);
-			var dx = vector.x - this.x;
-			var dy = vector.y - this.y;
-			return new Vector3d(-dy, dx, 0);
-		} else {
-			return new Vector3d(0,0,0);
-		}
-	}
 	, crossProductTo: function(vector){
 		return new Vector(
 			this.y*vector.z - this.z*vector.y,
 			this.z*vector.x - this.x*vector.z,
 			this.x*vector.y - this.y*vector.x
 		);
+	}
+	, getCosineTheta: function(vector){
+		return this.dot(vector) / (this.magnitude() * vector.magnitude());
 	}
 };
