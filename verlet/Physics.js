@@ -8,7 +8,11 @@ function Physics(width, height, GravitationX, GravitationY, pIterations){
 	this.bodyCount = 0;
 	this.vertexCount = 0;
 	this.edgeCount = 0;
-	this.gravity = new Vector3d(GravitationX, GravitationY, 0);
+	
+	this.worldForces = [];
+	this.addWorldForce(new Vector3d(GravitationX, GravitationY, 0));
+	this.addWorldForce(new Vector3d(0.2, 0, 0));
+	//this.gravity = new Vector3d(GravitationX, GravitationY, 0);
 	this.iterations = pIterations;
 	this.timestep = 1.0;
 	
@@ -21,9 +25,16 @@ function Physics(width, height, GravitationX, GravitationY, pIterations){
 }
 
 Physics.prototype = {
-	_updateForces: function(){
+	addWorldForce: function(vector){
+		this.worldForces.push(vector);
+	}
+	, _updateForces: function(){
 		for( var i = 0; i < this.vertexCount; i++ ){
-			this.vertices[i].acceleration = this.gravity;
+			this.vertices[i].acceleration.replace(0, 0, 0);
+			for(var f = 0; f < this.worldForces.length; f++){
+				this.vertices[i].acceleration.plusEq( this.worldForces[f] );
+			}
+			
 		}
 	}
 	, _updateVerlet: function(){

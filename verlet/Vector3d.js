@@ -8,6 +8,11 @@ Vector3d.prototype = {
 	copy: function(){
 		return new Vector3d( this.x, this.y, this.z );
 	}
+	, replace: function(x, y, z){
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
 	, plusEq: function(vector){
 		this.x += vector.x;
 		this.y += vector.y;
