@@ -9,10 +9,11 @@ function Physics(width, height, GravitationX, GravitationY, pIterations){
 	this.vertexCount = 0;
 	this.edgeCount = 0;
 	
+	this.worldFriction = 0.01;
+	
 	this.worldForces = [];
 	this.addWorldForce(new Vector3d(GravitationX, GravitationY, 0));
-	this.addWorldForce(new Vector3d(0.2, 0, 0));
-	//this.gravity = new Vector3d(GravitationX, GravitationY, 0);
+	
 	this.iterations = pIterations;
 	this.timestep = 1.0;
 	

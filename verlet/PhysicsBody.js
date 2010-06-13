@@ -76,4 +76,33 @@ PhysicsBody.prototype = {
 		new Edge( world, this, v1, v3, false ); // these are cross beams?
 		new Edge( world, this, v2, v4, false );
 	}
+	, createCircle: function(world, x, y, radius, smoothness){
+		var points = [];
+		var lastPoint = undefined;
+		var firstPoint = undefined;
+		for(var i = 0; i < smoothness; i++){
+			var ratio = 2*Math.PI * (i / smoothness);
+			var v = new Vertex(world, this, 
+				x + radius*Math.cos( ratio ), 
+				y + radius*Math.sin( ratio ), 0);
+			if(i == 0) firstPoint = v;
+			if(lastPoint != undefined){
+				new Edge( world, this, lastPoint, v, true );
+			}
+			if(i == smoothness-1) {
+				new Edge( world, this, v, firstPoint, true );
+			}
+			lastPoint = v;
+			points.push(v);
+		}
+		
+		var l = points.length;
+		var middle = Math.floor(l / 2);
+		var opposite = 0;
+		for(var i = 0; i < l; i++){
+			opposite = i + middle;
+			if(opposite >= l) opposite -= middle*2;
+			new Edge( world, this, points[i], points[opposite], false );
+		}
+	}
 };
