@@ -22,6 +22,11 @@ PhysicsBody.prototype = {
 	, addVertex: function(v){
 		this.vertices[ this.vertexCount++ ] = v;
 	}
+	, applyForce: function(vector3d){
+		for(var i = 0; i < this.vertices.length; i++){
+			this.vertices[i].applyForce(vector3d);
+		}
+	}
 	, projectToAxis: function(axis){
 		var dotP = axis.dot( this.vertices[0].position );
 		var data = new MinMax();
@@ -63,17 +68,32 @@ PhysicsBody.prototype = {
 		this.center.z /= this.vertexCount;
 	}
 	, createBox: function(world, x, y, width, height){
-		var v1 = new Vertex( world, this, x, 		 y, 0 );
-		var v2 = new Vertex( world, this, x + width, y, 0 );
-		var v3 = new Vertex( world, this, x + width, y + height, 0 );
-		var v4 = new Vertex( world, this, x, 		 y + height, 0 );
+		var v1 = new Vertex( world, this, x, 		 y, 0, this.mass );
+		var v2 = new Vertex( world, this, x + width, y, 0, this.mass );
+		var v3 = new Vertex( world, this, x + width, y + height, 0, this.mass );
+		var v4 = new Vertex( world, this, x, 		 y + height, 0, this.mass );
 		
 		new Edge( world, this, v1, v2, true );
 		new Edge( world, this, v2, v3, true );
 		new Edge( world, this, v3, v4, true );
 		new Edge( world, this, v4, v1, true );
 		
-		new Edge( world, this, v1, v3, false ); // these are cross beams?
+		new Edge( world, this, v1, v3, false ); // these are cross beams
+		new Edge( world, this, v2, v4, false );
+		return this;
+	}
+	, createFixedBox: function(world, x, y, width, height){
+		var v1 = new Vertex( world, this, x, 		 y, 0, this.mass, true );
+		var v2 = new Vertex( world, this, x + width, y, 0, this.mass, true );
+		var v3 = new Vertex( world, this, x + width, y + height, 0, this.mass, true );
+		var v4 = new Vertex( world, this, x, 		 y + height, 0, this.mass, true );
+		
+		new Edge( world, this, v1, v2, true );
+		new Edge( world, this, v2, v3, true );
+		new Edge( world, this, v3, v4, true );
+		new Edge( world, this, v4, v1, true );
+		
+		new Edge( world, this, v1, v3, false ); 
 		new Edge( world, this, v2, v4, false );
 	}
 	, createCircle: function(world, x, y, radius, smoothness){
@@ -84,7 +104,7 @@ PhysicsBody.prototype = {
 			var ratio = 2*Math.PI * (i / smoothness);
 			var v = new Vertex(world, this, 
 				x + radius*Math.cos( ratio ), 
-				y + radius*Math.sin( ratio ), 0);
+				y + radius*Math.sin( ratio ), 0, this.mass);
 			if(i == 0) firstPoint = v;
 			if(lastPoint != undefined){
 				new Edge( world, this, lastPoint, v, true );
@@ -104,5 +124,24 @@ PhysicsBody.prototype = {
 			if(opposite >= l) opposite -= middle*2;
 			new Edge( world, this, points[i], points[opposite], false );
 		}
+	}
+	, createFromPath: function(world, pathArr, fixed){
+		var l = pathArr.length;
+		if(pathArr[0].x == pathArr[l-1].x
+		&& pathArr[0].y == pathArr[l-1].y
+		&& pathArr[0].z == pathArr[l-1].z) {
+			// remove duplicate last point
+			pathArr.pop();
+		}
+		l = pathArr.length;
+		var vs = [];
+		for(var i = 0; i < l; i++){
+			vs.push(new Vertex(world, this, pathArr[i].x, pathArr[i].y, pathArr[i].z, this.mass, fixed));
+		}
+		
+		for(var j = 0; j < l-1; j++){
+			new Edge(world, this, vs[j], vs[j+1], true);
+		}
+		new Edge(world, this, vs[l-1], vs[0], true); // complete
 	}
 };

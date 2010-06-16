@@ -31,7 +31,7 @@ Vector3d.prototype = {
 	, subtract: function(vector){
 		return this.copy().minusEq(vector);
 	}
-	, magnitude: function(){
+	, length: function(){
 		return Math.sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
 	}
 	, dot: function(vector){
@@ -59,14 +59,14 @@ Vector3d.prototype = {
 		} else
 			return false;
 	}
-	, scalar: function(scalar){
+	, scalarEq: function(scalar){
 		this.x *= scalar;
 		this.y *= scalar;
 		this.z *= scalar;
 		return this;
 	}
 	, normalize: function(){
-		var mag = this.magnitude();
+		var mag = this.length();
 		return new Vector3d( this.x / mag, this.y / mag, this.z / mag );
 	}
 	, crossProductTo: function(vector){

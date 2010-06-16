@@ -9,13 +9,13 @@ function Physics(width, height, GravitationX, GravitationY, pIterations){
 	this.vertexCount = 0;
 	this.edgeCount = 0;
 	
-	this.worldFriction = 0.01;
+	this.damping = 0.02;
 	
 	this.worldForces = [];
 	this.addWorldForce(new Vector3d(GravitationX, GravitationY, 0));
 	
 	this.iterations = pIterations;
-	this.timestep = 1.0;
+	this.timestep = 1.0; // decrease this for slow-mo
 	
 	this.CollisionInfo = {
 		depth: 0
@@ -31,11 +31,16 @@ Physics.prototype = {
 	}
 	, _updateForces: function(){
 		for( var i = 0; i < this.vertexCount; i++ ){
-			this.vertices[i].acceleration.replace(0, 0, 0);
+			var v = this.vertices[i];
+			v.acceleration.replace(0, 0, 0); // this should probably be moved to the updateVerlet function, and then to the Verlet particle itself eventually
 			for(var f = 0; f < this.worldForces.length; f++){
-				this.vertices[i].acceleration.plusEq( this.worldForces[f] );
+				v.acceleration.plusEq( this.worldForces[f] );
 			}
 			
+			for(var vf = 0; vf < v.forces.length; vf++){
+				v.acceleration.plusEq( v.forces[vf] );
+			}
+			v.resetForces();
 		}
 	}
 	, _updateVerlet: function(){
@@ -43,35 +48,59 @@ Physics.prototype = {
 		
 		for(var i = 0; i < this.vertexCount; i++){
 			var v = this.vertices[i];
-			tempX = v.position.x;
-			tempY = v.position.y;
-			v.position.x += v.position.x - v.oldPosition.x + v.acceleration.x * this.timestep*this.timestep;
-			v.position.y += v.position.y - v.oldPosition.y + v.acceleration.y * this.timestep*this.timestep;
-			v.oldPosition.x = tempX;
-			v.oldPosition.y = tempY;
+			if(v.fixed == false){
+				tempX = v.position.x;
+				tempY = v.position.y;
+				//v.position.x += v.position.x - v.oldPosition.x + v.acceleration.x * this.timestep*this.timestep;
+				//v.position.y += v.position.y - v.oldPosition.y + v.acceleration.y * this.timestep*this.timestep;
+				v.position.x += ((v.position.x - v.oldPosition.x) * (1.0 - this.damping) + (v.acceleration.x * this.timestep*this.timestep));
+				v.position.y += ((v.position.y - v.oldPosition.y) * (1.0 - this.damping) + (v.acceleration.y * this.timestep*this.timestep));
+				v.oldPosition.x = tempX;
+				v.oldPosition.y = tempY;
+			}
 		}
 	}
 	, _updateEdges: function(){
 		for(var i = 0; i < this.edgeCount; i++){
 			var e = this.edges[i];
 			
-			// Calculate the vector between the two vertices
-			var v1v2x = e.v2.position.x - e.v1.position.x;
-			var v1v2y = e.v2.position.y - e.v1.position.y;
+			//// Calculate the vector between the two vertices
+			//var v1v2x = e.v2.position.x - e.v1.position.x;
+			//var v1v2y = e.v2.position.y - e.v1.position.y;
+			//
+			//var v1v2Length = Math.hypot(v1v2x, v1v2y); // calculate the current distance
+			//var diff = v1v2Length - e.length; // calculate the difference from the original
+			//
+			//// Normalize
+			//var len = 1.0 / Math.hypot(v1v2x, v1v2y);
+			//v1v2x *= len;
+			//v1v2y *= len;
+			//
+			//// Push both vertices apart by half of the difference respectively so the distance between them equals the original length
+			//e.v1.position.x += v1v2x * diff * 0.5;
+			//e.v1.position.y += v1v2y * diff * 0.5;
+			//e.v2.position.x -= v1v2x * diff * 0.5;
+			//e.v2.position.y -= v1v2y * diff * 0.5;
 			
-			var v1v2Length = Math.hypot(v1v2x, v1v2y); // calculate the current distance
-			var diff = v1v2Length - e.length; // calculate the difference from the original
+			// 
+			//var d1x = e.v2.position.x - e.v1.position.x;
+			//var d1y = e.v2.position.y - e.v1.position.y;
+			//var d2 = Math.sqrt(d1x*d1x + d1y*d1y);
+			//var d3 = (d2 - e.length) / (d2);
+			//e.v1.position.x += (0.5 * d1x * d3);
+			//e.v2.position.x -= (0.5 * d1x * d3);
+			//e.v1.position.y += (0.5 * d1y * d3);
+			//e.v2.position.y -= (0.5 * d1y * d3);
 			
-			// Normalize
-			var len = 1.0 / Math.hypot(v1v2x, v1v2y);
-			v1v2x *= len;
-			v1v2y *= len;
-			
-			// Push both vertices apart by half of the difference respectively so the distance between them equals the original length
-			e.v1.position.x += v1v2x * diff * 0.5;
-			e.v1.position.y += v1v2y * diff * 0.5;
-			e.v2.position.x -= v1v2x * diff * 0.5;
-			e.v2.position.y -= v1v2y * diff * 0.5;
+			var delta = e.v2.position.subtract(e.v1.position);
+			var deltaLength = delta.length();
+			var diff = (deltaLength - e.length) / (deltaLength);
+			//var diff = (deltaLength - e.length) / (deltaLength * (e.v1.inverseMass+e.v2.inverseMass));
+			delta.scalarEq(diff * 0.5);
+			if(e.v1.fixed == false) e.v1.position.plusEq( delta );
+			if(e.v2.fixed == false) e.v2.position.minusEq( delta );
+			//e.v1.position.plusEq( delta.scalarEq(e.v1.inverseMass) );
+			//e.v2.position.minusEq( delta.scalarEq(e.v2.inverseMass) );
 		}
 	}
 	, _iterateCollisions: function(){
@@ -196,6 +225,7 @@ Physics.prototype = {
 		var collisionVectorX = this.CollisionInfo.normal.x * this.CollisionInfo.depth;
 		var collisionVectorY = this.CollisionInfo.normal.y * this.CollisionInfo.depth;
 
+		// t is where on the edge the collision vertex is
 		var t;
 		if (Math.abs( e1.position.x - e2.position.x ) > Math.abs( e1.position.y - e2.position.y ) ) {
 			t = ( this.CollisionInfo.v.position.x - collisionVectorX - e1.position.x )/(  e2.position.x - e1.position.x );
@@ -211,13 +241,40 @@ Physics.prototype = {
 		var ratio1 = this.CollisionInfo.v.parent.mass*invCollisionMass;
 		var ratio2 = edgeMass*invCollisionMass;
 
-		e1.position.x -= collisionVectorX * (( 1 - t )*ratio1*lambda);
-		e1.position.y -= collisionVectorY * (( 1 - t )*ratio1*lambda);
-		e2.position.x -= collisionVectorX * (    t    *ratio1*lambda);
-		e2.position.y -= collisionVectorY * (    t    *ratio1*lambda);
+		if(e1.fixed == false) e1.position.x -= collisionVectorX * (( 1 - t )*ratio1*lambda);
+		if(e1.fixed == false) e1.position.y -= collisionVectorY * (( 1 - t )*ratio1*lambda);
+		if(e2.fixed == false) e2.position.x -= collisionVectorX * (    t    *ratio1*lambda);
+		if(e2.fixed == false) e2.position.y -= collisionVectorY * (    t    *ratio1*lambda);
 		
-		this.CollisionInfo.v.position.x += collisionVectorX * ratio2;
-		this.CollisionInfo.v.position.y += collisionVectorY * ratio2;
+		// apply friction?!
+		if(e1.fixed == false) e1.oldPosition.x += collisionVectorX * (( 1 - t )*ratio1*lambda) * 0.01;
+		if(e1.fixed == false) e1.oldPosition.y += collisionVectorY * (( 1 - t )*ratio1*lambda) * 0.01;
+		if(e2.fixed == false) e2.oldPosition.x += collisionVectorX * (    t    *ratio1*lambda) * 0.01;
+		if(e2.fixed == false) e2.oldPosition.y += collisionVectorY * (    t    *ratio1*lambda) * 0.01;
+		
+		
+		if(this.CollisionInfo.v.fixed == false) this.CollisionInfo.v.position.x += collisionVectorX * ratio2;
+		if(this.CollisionInfo.v.fixed == false) this.CollisionInfo.v.position.y += collisionVectorY * ratio2;
+		
+		// apply friction?!
+		if(this.CollisionInfo.v.fixed == false) this.CollisionInfo.v.oldPosition.x -= collisionVectorX * ratio2 * 0.01;
+		if(this.CollisionInfo.v.fixed == false) this.CollisionInfo.v.oldPosition.y -= collisionVectorY * ratio2 * 0.01;
+		
+		//var point = this.CollisionInfo.v;
+		//var relativeVelocity = point.position.subtract(point.oldPosition).subtract( 
+		//	e1.position.add(e2.position).subtract(e1.oldPosition).subtract(e2.oldPosition).scalarEq(0.5) );
+		//var normalized = this.CollisionInfo.normal.normalize();
+		//var relativeTangentVelocity = relativeVelocity.subtract(this.CollisionInfo.normal);//normalized.scalarEq( relativeVelocity.dot(normalized) );
+		//relativeTangentVelocity.scalarEq(0.0001);
+		//
+		//e1.oldPosition.plusEq( relativeTangentVelocity );
+		//e2.oldPosition.plusEq( relativeTangentVelocity );
+		//
+		//if(t < 0) point.oldPosition.minusEq( relativeTangentVelocity );
+		//else if(t > 0) point.oldPosition.plusEq( relativeTangentVelocity );
+		
+		
+		// TODO: take velocity of each part... e2.position - e2.oldPosition, then reverse it, then multiply by friction coefficient, then add/subtract to e2.oldPosition? or e2.position?
 	}
 	, _intervalDistance: function(minA, maxA, minB, maxB) {
 		if (minA < minB) {
@@ -238,8 +295,9 @@ Physics.prototype = {
 	}
 	, update: function(){
 		this._updateForces();
-		this._updateVerlet();
 		this._iterateCollisions();
+		this._updateVerlet();
+		
 	}
 	, render: function(ctx){
 		ctx.fillStyle = "#000000";
