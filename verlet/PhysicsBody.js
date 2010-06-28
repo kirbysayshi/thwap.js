@@ -1,17 +1,19 @@
 function PhysicsBody(parent, pMass){
-	this.center = new Vector3d(0,0,0); // center of mass
-	this.vertexCount = 0;
-	this.edgeCount = 0;
-	this.mass = pMass;
+	if(arguments.length > 0){
+		this.center = new Vector3d(0,0,0); // center of mass
+		this.vertexCount = 0;
+		this.edgeCount = 0;
+		this.mass = pMass;
 	
-	// min/max coordinates of bounding box
-	this.minX = 0, this.minY = 0;
-	this.maxX = 0, this.maxY = 0;
+		// min/max coordinates of bounding box
+		this.minX = 0, this.minY = 0;
+		this.maxX = 0, this.maxY = 0;
 	
-	this.vertices = [];
-	this.edges = []
+		this.vertices = [];
+		this.edges = []
 	
-	parent.addBody(this);
+		parent.addBody(this);
+	}
 }
 
 PhysicsBody.prototype = {

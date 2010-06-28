@@ -31,6 +31,18 @@ Vector3d.prototype = {
 	, subtract: function(vector){
 		return this.copy().minusEq(vector);
 	}
+	, plusEqScalar: function(scalar){
+		this.x += scalar;
+		this.y += scalar;
+		this.z += scalar;
+		return this;
+	}
+	, divideScalarEq: function(scalar){
+		this.x /= scalar;
+		this.y /= scalar;
+		this.z /= scalar;
+		return this;
+	}
 	, length: function(){
 		return Math.sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
 	}
@@ -58,6 +70,12 @@ Vector3d.prototype = {
 			return (vector.y - this.y) / (vector.x - this.x);
 		} else
 			return false;
+	}
+	, multiply: function(vector){
+		return new Vector3d( this.x*vector.x, this.y*vector.y, this.z*vector.z );
+	}
+	, scalar: function(scalar){
+		return new Vector3d(this.x*scalar, this.y*scalar, this.z*scalar);
 	}
 	, scalarEq: function(scalar){
 		this.x *= scalar;

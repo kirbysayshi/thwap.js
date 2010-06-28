@@ -19,6 +19,8 @@
 		<script type="text/javascript" charset="utf-8" src='Physics.js'></script>
 		<script type="text/javascript" charset="utf-8" src='PhysicsBody.js'></script>
 		<script type="text/javascript" charset="utf-8" src='Vertex.js'></script>
+		
+		<script type="text/javascript" charset="utf-8" src='Hero.js'></script>
 		<script type="text/javascript" charset="utf-8" src='Main.js'></script>
 		
 		<script type="text/javascript">
@@ -30,7 +32,7 @@
 			var fps = document.getElementById('fpsMeter');
 			
 			var SCREEN_WIDTH = 700, SCREEN_HEIGHT = 600;
-			world = new Physics(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0, 1, 15);
+			world = new Physics(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0, 12, 15);
 			
 			for( var X = 60; X < SCREEN_WIDTH; X += 100 ) {
 				for( var Y = 100; Y < SCREEN_HEIGHT - 100; Y += 100 ) {
@@ -41,16 +43,16 @@
 			for( var X = 50; X < SCREEN_WIDTH - 50; X += 130 ) {
 				var Body = new PhysicsBody(world, 10000); //Create a few triangles. Only boxes would get boring, right?
             
-				var V1 = new Vertex( world, Body, X      , 45, 0 );
-				var V2 = new Vertex( world, Body, X +  50, 1 , 0 );
-				var V3 = new Vertex( world, Body, X + 100, 45, 0 );
+				var V1 = new Vertex( world, Body, X      , 45, 0, 10000 );
+				var V2 = new Vertex( world, Body, X +  50, 1 , 0, 10000 );
+				var V3 = new Vertex( world, Body, X + 100, 45, 0, 10000 );
             
 				new Edge( world, Body, V1, V2 );
 				new Edge( world, Body, V2, V3 );
 				new Edge( world, Body, V3, V1 );
 			}
 			
-			new PhysicsBody(world, 1000000).createBox( world, 10, 400, 200, 50 ); //Create a few boxes
+			new PhysicsBody(world, 10000).createBox( world, 10, 430, 200, 50 ); 
 			//new PhysicsBody(world, 100).createBox( world, 30, 80, 50, 50 ); //Create a few boxes
 			//new PhysicsBody(world, 100).createBox( world, 30, 100, 50, 50 ); //Create a few boxes
 			new PhysicsBody(world, 10000).createCircle( world, 200, 50, 25, 8);
@@ -73,7 +75,7 @@
 			
 
 			// make some platforms!
-			var path2 = new PhysicsBody(world, 10000).createFromPath(world, [
+			var path2 = new PhysicsBody(world, 100000).createFromPath(world, [
 				{ x: 64, y: 328, z: 0 }, { x: 343, y: 298, z: 0 }, { x: 403, y: 328, z: 0 }, { x: 404, y: 395, z: 0 }, 
 				{ x: 65, y: 405, z: 0 }, { x: 64, y: 328, z: 0 } // repeat first point 
 			], true);
@@ -88,7 +90,7 @@
 			//	{ x: 31, y: 173, z: 0 } // repeat first point
 			//], true);
 			
-			var hero = new PhysicsBody(world, 10000).createBox( world, 20, 10, 10, 50 );
+			var hero = new Hero(world);//PhysicsBody(world, 10000).createBox( world, 20, 10, 10, 50 );
 			
 			var intVal = setInterval(function(){
 				world.update();

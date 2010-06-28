@@ -9,6 +9,7 @@ function Vertex(world, body, posX, posY, posZ, mass, fixed){
 	this.inverseMass = mass != 0 ? 1/mass: 0;
 	this.fixed = fixed == undefined ? false : fixed;
 	this.forces = [];
+	this.constantForces = [];
 	
 	body.addVertex(this);
 	world.addVertex(this);
@@ -20,5 +21,8 @@ Vertex.prototype = {
 	}
 	, resetForces: function(){
 		this.forces = [];
+	}
+	, addConstantForce: function(vector3d){
+		this.constantForces.push(vector3d)
 	}
 };

@@ -15,7 +15,8 @@ function Physics(width, height, GravitationX, GravitationY, pIterations){
 	this.addWorldForce(new Vector3d(GravitationX, GravitationY, 0));
 	
 	this.iterations = pIterations;
-	this.timestep = 1.0; // decrease this for slow-mo
+	this.edgeIterations = 2;
+	this.timestep = 0.2; // decrease this for slow-mo
 	
 	this.CollisionInfo = {
 		depth: 0
@@ -37,6 +38,10 @@ Physics.prototype = {
 				v.acceleration.plusEq( this.worldForces[f] );
 			}
 			
+			for(var vfc = 0; vfc < v.constantForces.length; vfc++){
+				v.acceleration.plusEq( v.constantForces[vfc] );
+			}
+			
 			for(var vf = 0; vf < v.forces.length; vf++){
 				v.acceleration.plusEq( v.forces[vf] );
 			}
@@ -44,63 +49,38 @@ Physics.prototype = {
 		}
 	}
 	, _updateVerlet: function(){
-		var tempX, tempY;
+		//var tempX, tempY;
 		
 		for(var i = 0; i < this.vertexCount; i++){
 			var v = this.vertices[i];
 			if(v.fixed == false){
-				tempX = v.position.x;
-				tempY = v.position.y;
-				//v.position.x += v.position.x - v.oldPosition.x + v.acceleration.x * this.timestep*this.timestep;
-				//v.position.y += v.position.y - v.oldPosition.y + v.acceleration.y * this.timestep*this.timestep;
-				v.position.x += ((v.position.x - v.oldPosition.x) * (1.0 - this.damping) + (v.acceleration.x * this.timestep*this.timestep));
-				v.position.y += ((v.position.y - v.oldPosition.y) * (1.0 - this.damping) + (v.acceleration.y * this.timestep*this.timestep));
-				v.oldPosition.x = tempX;
-				v.oldPosition.y = tempY;
+				//tempX = v.position.x;
+				//tempY = v.position.y;
+				var temp = v.position.copy();
+				v.position.plusEq( 
+					v.position
+						.subtract( v.oldPosition )
+						//.scalarEq(1.0 - this.damping)
+						.plusEq( v.acceleration.scalarEq(this.timestep*this.timestep) ) 
+				);
+				
+				v.oldPosition = temp;
 			}
 		}
 	}
 	, _updateEdges: function(){
-		for(var i = 0; i < this.edgeCount; i++){
-			var e = this.edges[i];
+		for(var j = 0; j < this.edgeIterations; j++){
+			for(var i = 0; i < this.edgeCount; i++){
+				var e = this.edges[i];
 			
-			//// Calculate the vector between the two vertices
-			//var v1v2x = e.v2.position.x - e.v1.position.x;
-			//var v1v2y = e.v2.position.y - e.v1.position.y;
-			//
-			//var v1v2Length = Math.hypot(v1v2x, v1v2y); // calculate the current distance
-			//var diff = v1v2Length - e.length; // calculate the difference from the original
-			//
-			//// Normalize
-			//var len = 1.0 / Math.hypot(v1v2x, v1v2y);
-			//v1v2x *= len;
-			//v1v2y *= len;
-			//
-			//// Push both vertices apart by half of the difference respectively so the distance between them equals the original length
-			//e.v1.position.x += v1v2x * diff * 0.5;
-			//e.v1.position.y += v1v2y * diff * 0.5;
-			//e.v2.position.x -= v1v2x * diff * 0.5;
-			//e.v2.position.y -= v1v2y * diff * 0.5;
-			
-			// 
-			//var d1x = e.v2.position.x - e.v1.position.x;
-			//var d1y = e.v2.position.y - e.v1.position.y;
-			//var d2 = Math.sqrt(d1x*d1x + d1y*d1y);
-			//var d3 = (d2 - e.length) / (d2);
-			//e.v1.position.x += (0.5 * d1x * d3);
-			//e.v2.position.x -= (0.5 * d1x * d3);
-			//e.v1.position.y += (0.5 * d1y * d3);
-			//e.v2.position.y -= (0.5 * d1y * d3);
-			
-			var delta = e.v2.position.subtract(e.v1.position);
-			var deltaLength = delta.length();
-			var diff = (deltaLength - e.length) / (deltaLength);
-			//var diff = (deltaLength - e.length) / (deltaLength * (e.v1.inverseMass+e.v2.inverseMass));
-			delta.scalarEq(diff * 0.5);
-			if(e.v1.fixed == false) e.v1.position.plusEq( delta );
-			if(e.v2.fixed == false) e.v2.position.minusEq( delta );
-			//e.v1.position.plusEq( delta.scalarEq(e.v1.inverseMass) );
-			//e.v2.position.minusEq( delta.scalarEq(e.v2.inverseMass) );
+				var delta = e.v2.position.subtract(e.v1.position);
+				var deltaLength = delta.length();
+				var diff = (deltaLength - e.length) / (deltaLength);
+				delta.scalarEq(diff * 0.5);
+				if(e.v1.fixed == false) e.v1.position.plusEq( delta );
+				if(e.v2.fixed == false) e.v2.position.minusEq( delta );
+				
+			}
 		}
 	}
 	, _iterateCollisions: function(){
@@ -218,6 +198,54 @@ Physics.prototype = {
 
 		return true; //There is no separating axis. Report a collision!
 	}
+	, _processCollisionWithFriction: function(xParticle, NcollVector, dcoll){
+		var xParticle = this.CollisionInfo.v;
+		var particle1 = this.CollisionInfo.e.v1;
+		var particle2 = this.CollisionInfo.e.v2;
+		var dcoll = this.CollisionInfo.depth;
+		var NcollVector = this.CollisionInfo.normal;
+		
+		//-----------------------------------------------------------
+		// the amount of friction
+		//-----------------------------------------------------------
+		var friction = 0.5;
+
+		//-----------------------------------------------------------
+		// Move particle away from plane
+		//-----------------------------------------------------------
+		var invmass = (particle1.inverseMass + particle2.inverseMass + xParticle.inverseMass);
+
+		xParticle.oldPosition.minusEq( NcollVector.scalarEq( (dcoll * xParticle.inverseMass) ) );
+		particle1.oldPosition.plusEq ( NcollVector.scalarEq( (dcoll * particle1.inverseMass) ) );
+		particle2.oldPosition.plusEq ( NcollVector.scalarEq( (dcoll * particle2.inverseMass) ) );
+
+		var V0 = particle1.oldPosition.subtract( particle1.position );
+		var V2 = particle2.oldPosition.subtract( particle2.position );
+		var V1 = xParticle.oldPosition.subtract( xParticle.position );
+		var V  = V0.subtract( V1 );
+		var VV  = V2.subtract( V1 );
+
+		//-----------------------------------------------------------
+		// calculate velcity along normal, and collision plane
+		//-----------------------------------------------------------
+		var Vn = NcollVector.scalar(V.dot(NcollVector));
+		var VVn = NcollVector.scalar(VV.dot(NcollVector));
+		var Vt = V.subtract(Vn);
+		var VVt = V.subtract(VVn);
+
+		//-----------------------------------------------------------
+		// apply friction.
+		//-----------------------------------------------------------
+		Vt.divideScalarEq(invmass); 
+		VVt.divideScalarEq(invmass); 
+
+		particle1.oldPosition.minusEq( Vt.scalar(friction * particle1.inverseMass) );
+		particle2.oldPosition.minusEq( VVt.scalar(friction * particle2.inverseMass) );
+		xParticle.oldPosition.plusEq(  Vt.scalar(friction * xParticle.inverseMass) );
+
+		return true;
+		
+	}	
 	, _processCollision: function(){
 		var e1 = this.CollisionInfo.e.v1;
 		var e2 = this.CollisionInfo.e.v2;
@@ -241,40 +269,25 @@ Physics.prototype = {
 		var ratio1 = this.CollisionInfo.v.parent.mass*invCollisionMass;
 		var ratio2 = edgeMass*invCollisionMass;
 
+		
 		if(e1.fixed == false) e1.position.x -= collisionVectorX * (( 1 - t )*ratio1*lambda);
 		if(e1.fixed == false) e1.position.y -= collisionVectorY * (( 1 - t )*ratio1*lambda);
 		if(e2.fixed == false) e2.position.x -= collisionVectorX * (    t    *ratio1*lambda);
 		if(e2.fixed == false) e2.position.y -= collisionVectorY * (    t    *ratio1*lambda);
 		
 		// apply friction?!
-		if(e1.fixed == false) e1.oldPosition.x += collisionVectorX * (( 1 - t )*ratio1*lambda) * 0.01;
-		if(e1.fixed == false) e1.oldPosition.y += collisionVectorY * (( 1 - t )*ratio1*lambda) * 0.01;
-		if(e2.fixed == false) e2.oldPosition.x += collisionVectorX * (    t    *ratio1*lambda) * 0.01;
-		if(e2.fixed == false) e2.oldPosition.y += collisionVectorY * (    t    *ratio1*lambda) * 0.01;
+		if(e1.fixed == false) e1.oldPosition.x += collisionVectorX * (( 1 - t )*ratio1*lambda) * 0.11;
+		if(e1.fixed == false) e1.oldPosition.y += collisionVectorY * (( 1 - t )*ratio1*lambda) * 0.11;
+		if(e2.fixed == false) e2.oldPosition.x += collisionVectorX * (    t    *ratio1*lambda) * 0.11;
+		if(e2.fixed == false) e2.oldPosition.y += collisionVectorY * (    t    *ratio1*lambda) * 0.11;
 		
-		
+	
 		if(this.CollisionInfo.v.fixed == false) this.CollisionInfo.v.position.x += collisionVectorX * ratio2;
 		if(this.CollisionInfo.v.fixed == false) this.CollisionInfo.v.position.y += collisionVectorY * ratio2;
 		
 		// apply friction?!
-		if(this.CollisionInfo.v.fixed == false) this.CollisionInfo.v.oldPosition.x -= collisionVectorX * ratio2 * 0.01;
-		if(this.CollisionInfo.v.fixed == false) this.CollisionInfo.v.oldPosition.y -= collisionVectorY * ratio2 * 0.01;
-		
-		//var point = this.CollisionInfo.v;
-		//var relativeVelocity = point.position.subtract(point.oldPosition).subtract( 
-		//	e1.position.add(e2.position).subtract(e1.oldPosition).subtract(e2.oldPosition).scalarEq(0.5) );
-		//var normalized = this.CollisionInfo.normal.normalize();
-		//var relativeTangentVelocity = relativeVelocity.subtract(this.CollisionInfo.normal);//normalized.scalarEq( relativeVelocity.dot(normalized) );
-		//relativeTangentVelocity.scalarEq(0.0001);
-		//
-		//e1.oldPosition.plusEq( relativeTangentVelocity );
-		//e2.oldPosition.plusEq( relativeTangentVelocity );
-		//
-		//if(t < 0) point.oldPosition.minusEq( relativeTangentVelocity );
-		//else if(t > 0) point.oldPosition.plusEq( relativeTangentVelocity );
-		
-		
-		// TODO: take velocity of each part... e2.position - e2.oldPosition, then reverse it, then multiply by friction coefficient, then add/subtract to e2.oldPosition? or e2.position?
+		if(this.CollisionInfo.v.fixed == false) this.CollisionInfo.v.oldPosition.x -= collisionVectorX * ratio2 * 0.11;
+		if(this.CollisionInfo.v.fixed == false) this.CollisionInfo.v.oldPosition.y -= collisionVectorY * ratio2 * 0.11;
 	}
 	, _intervalDistance: function(minA, maxA, minB, maxB) {
 		if (minA < minB) {
