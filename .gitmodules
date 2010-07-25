@@ -1,0 +1,3 @@
+[submodule "ID"]
+	path = ID
+	url = git@github.com:kirbysayshi/ID.js.git
