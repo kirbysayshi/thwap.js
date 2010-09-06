@@ -14,8 +14,8 @@ VectorUtil.FindRoots = function(a, b, c) {
 
 	var one_over_two_a = 1.0 / (2.0 * a);
 
-	t0 = (-b - d) * one_over_two_a;
-	t1 = (-b + d) * one_over_two_a;
+	var t0 = (-b - d) * one_over_two_a;
+	var t1 = (-b + d) * one_over_two_a;
 
 	if (t1 < t0)
 	{
