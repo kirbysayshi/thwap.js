@@ -33,10 +33,10 @@ CBasic.prototype = {
 	 * @param  string  deltaT  desc
 	 * @return  void   desc
 	 */
-	, InitBasicRenderer: function(width, height, targetFrameRate, deltaT){
+	, InitBasicRenderer: function(width, height, targetFrameRate){
 		this.viewport = V3.$(width, height, 0);
 		this.targetFrameRate = targetFrameRate;
-		this.deltaT = deltaT;
+		this.deltaT = 1 / targetFrameRate;
 		this.canvas = document.createElement("canvas");
 		this.canvas.setAttribute("width",  width);
 		this.canvas.setAttribute("height", height);

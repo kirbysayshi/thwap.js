@@ -46,8 +46,8 @@ CBody.prototype.RenderBoundingSphere = function(ctx) {
 // Render particle, and bounding sphere
 //-----------------------------------------------------------
 CParticle.prototype.Render = function(ctx, color) {
-	//if(this.m_xP0[0] > 0 && this.m_xP0[1] > 0
-	//&& this.m_xP0[0] < 640 && this.m_xP0[1] < 480){
+	//if(this.ppos[0] > 0 && this.ppos[1] > 0
+	//&& this.ppos[0] < 640 && this.ppos[1] < 480){
 		// bounding sphere
 		ctx.fillStyle = "rgba(" 
 			+ Math.round(color[0]*255) + "," 
@@ -55,7 +55,7 @@ CParticle.prototype.Render = function(ctx, color) {
 			+ Math.round(color[2]*255) + "," 
 			+ color[3] + ")";
 		ctx.beginPath();
-		ctx.arc( this.m_xP0[0], this.m_xP0[1], this.m_fRadius, 0, Math.PI*2, false );
+		ctx.arc( this.ppos[0], this.ppos[1], this.m_fRadius, 0, Math.PI*2, false );
 		ctx.fill();
 		
 		// position point
@@ -65,7 +65,7 @@ CParticle.prototype.Render = function(ctx, color) {
 			+ Math.round(color[2]*255) + "," 
 			+ color[3] + ")";
 		ctx.beginPath();
-		ctx.arc( this.m_xP0[0], this.m_xP0[1], 2, 0, Math.PI*2, false );
+		ctx.arc( this.ppos[0], this.ppos[1], 2, 0, Math.PI*2, false );
 		ctx.fill();
 	//}
 }
@@ -75,8 +75,8 @@ CLinConstraint.prototype.Render = function(ctx){
 		return;
 	ctx.strokeStyle = "#999999";	
 	ctx.beginPath();
-	ctx.moveTo(this.m_pxPA.m_xP1[0], this.m_pxPA.m_xP1[1]);
-	ctx.lineTo(this.m_pxPB.m_xP1[0], this.m_pxPB.m_xP1[1]);
+	ctx.moveTo(this.m_pxPA.cpos[0], this.m_pxPA.cpos[1]);
+	ctx.lineTo(this.m_pxPB.cpos[0], this.m_pxPB.cpos[1]);
 	ctx.stroke();
 }
 

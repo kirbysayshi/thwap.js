@@ -7,7 +7,7 @@ function CBody(iRigidity, fFriction){
 	this.m_iNumParticles = 0;
 	this.m_iNumConstraints = 0;
 	this.m_iMaxParticles = 100;
-	this.m_iMaxConstraints = 100;
+	this.m_iMaxConstraints = 1000;
 	this.m_iRigidity = typeof(iRigidity) === "undefined" ? this.m_iRigidity = 1 : iRigidity;
 	this.m_fFriction = typeof(fFriction) === "undefined" ? this.m_fFriction = 0.5: fFriction;
 
@@ -138,8 +138,10 @@ CBody.prototype = {
 		{
 			for(var j = 0; j < xBody.m_iNumParticles; j ++)
 			{
-				if (this.m_xParticles[i].Collide(xBody.m_xParticles[j]))
+				if (this.m_xParticles[i].Collide(xBody.m_xParticles[j])){
 					bCollided = true;
+					//this.UpdateConstraints();
+				}
 			}
 		}
 		return bCollided;

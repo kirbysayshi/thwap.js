@@ -7,7 +7,7 @@ function Scroller(){
 	
 	this.ID = new ID(false);
 	
-	this.InitBasicRenderer(640, 480, 60, 1 / 30);
+	this.InitBasicRenderer(640, 480, 30);
 	this.InitBodies();
 	this.StartBasicRun(this);
 }
@@ -31,7 +31,7 @@ Scroller.prototype.InitBodies = function(){
 		  V3.$(0, 440, 0)
 		, V3.$(600, 440, 0)
 		, V3.$(1200, 280, 0)
-		, V3.$(1200, 440, 0)
+		, V3.$(1250, 440, 0)
 		, V3.$(2400, 440, 0)
 		, V3.$(2400, 480, 0)
 		, V3.$(0, 480, 0)
@@ -49,29 +49,29 @@ Scroller.prototype.InitBodies = function(){
 	//this.bodies.NewBody(p);
 	
 	
-	var p1 = new CRigidBody(2, 0.5);
-	p1.AddParticle( new CParticle( V3.$(300, 10, 0),  2, 10, 0.5 ) );
-	p1.SetColor(1.0, 0.3, 0.3, 0.5);
-	p1.SetRigidBodyConstraints();
-	this.bodies.NewBody(p1);
-	
-	var p2 = new CRigidBody(2, 0.5);
-	p2.AddParticle( new CParticle( V3.$(300, 50, 0),  10, 10, 0.5 ) );
-	p2.SetColor(1.0, 0.3, 0.3, 0.5);
-	p2.SetRigidBodyConstraints();
-	this.bodies.NewBody(p2);
-	
-	var p3 = new CRigidBody(2, 0.5);
-	p3.AddParticle( new CParticle( V3.$(300, 90, 0),  15, 10, 0.5 ) );
-	p3.SetColor(1.0, 0.3, 0.3, 0.5);
-	p3.SetRigidBodyConstraints();
-	this.bodies.NewBody(p3);
-	
-	var p4 = new CRigidBody(2, 0.5);
-	p4.AddParticle( new CParticle( V3.$(300, 130, 0),  20, 10, 0.5 ) );
-	p4.SetColor(1.0, 0.3, 0.3, 0.5);
-	p4.SetRigidBodyConstraints();
-	this.bodies.NewBody(p4);
+	//var p1 = new CRigidBody(2, 0.5);
+	//p1.AddParticle( new CParticle( V3.$(300, 10, 0),  2, 10, 0.5 ) );
+	//p1.SetColor(1.0, 0.3, 0.3, 0.5);
+	//p1.SetRigidBodyConstraints();
+	//this.bodies.NewBody(p1);
+	//
+	//var p2 = new CRigidBody(2, 0.5);
+	//p2.AddParticle( new CParticle( V3.$(300, 50, 0),  10, 10, 0.5 ) );
+	//p2.SetColor(1.0, 0.3, 0.3, 0.5);
+	//p2.SetRigidBodyConstraints();
+	//this.bodies.NewBody(p2);
+	//
+	//var p3 = new CRigidBody(2, 0.5);
+	//p3.AddParticle( new CParticle( V3.$(300, 90, 0),  15, 10, 0.5 ) );
+	//p3.SetColor(1.0, 0.3, 0.3, 0.5);
+	//p3.SetRigidBodyConstraints();
+	//this.bodies.NewBody(p3);
+	//
+	//var p4 = new CRigidBody(2, 0.5);
+	//p4.AddParticle( new CParticle( V3.$(300, 130, 0),  20, 10, 0.5 ) );
+	//p4.SetColor(1.0, 0.3, 0.3, 0.5);
+	//p4.SetRigidBodyConstraints();
+	//this.bodies.NewBody(p4);
 	
 	//var b1 = new CBox(V3.$(300, 10, 0), 10, 10, 11, 0.5);
 	//var b2 = new CBox(V3.$(300, 50, 0), 10, 10, 11, 0.5);
@@ -96,7 +96,34 @@ Scroller.prototype.InitBodies = function(){
 	//b.SetRigidBodyConstraints();
 	//var b = new CSoftBody(V3.$(100, 20, 0), 20, 8, 3.5, 2, 1);
 	//b.SetColor(1.0, 0.3, 0.3, 0.5);
+	
 	var b = new Hero( V3.$(100, 20, 0) );
+	
+	var setup = [
+		// new CRectangularBox(V3.$(82.5, 320, 0), 10, 20, 10, 11, 0.5)
+		//,new CRectangularBox(V3.$(60,   340, 0), 50, 10, 10, 11, 0.5)
+		//,new CRectangularBox(V3.$(60,   350, 0), 10, 90, 10, 11, 0.5)
+		//,new CRectangularBox(V3.$(100,  350, 0), 10, 90, 10, 11, 0.5)
+		 new CBox(V3.$(60, 362, 0), 10, 10, 11, 0.5)
+		,new CBox(V3.$(60, 384, 0), 10, 10, 11, 0.5)
+		,new CBox(V3.$(60, 406, 0), 10, 10, 11, 0.5)
+		,new CBox(V3.$(60, 428, 0), 10, 10, 11, 0.5)
+	];
+	
+	var self = this;
+	
+	setup.forEach(function(e){
+		self.bodies.NewBody(e);
+	})
+	
+	//var b = new CRectangularBox(V3.$(200, 390, 0), 50, 50, 10, 11, 0.5);
+	
+	//var b = new CRigidBody(1, 1);
+	//b.AddParticle( new CParticle( V3.$(200, 390, 0), 10, 3.5, 0.5 ) );
+	//b.AddParticle( new CParticle( V3.$(205, 390, 0), 10, 3.5, 0.5 ) );
+	//b.AddParticle( new CParticle( V3.$(205, 395, 0), 10, 3.5, 0.5 ) );
+	//b.AddParticle( new CParticle( V3.$(200, 395, 0), 10, 3.5, 0.5 ) );
+	//b.SetRigidBodyConstraints();
 	
 	this.bodies.NewBody(b);
 	
@@ -165,8 +192,14 @@ Scroller.prototype.BasicKeyHandler = function(e){
 Scroller.prototype.CheckInput = function(dt){
 	this.ID.Update(dt);
 	
-	this.scrollFocus.AddForce(V3.$( this.ID.IsKeyDown(ID.D) ? 150 : 0, 0, 0));
-	this.scrollFocus.AddForce(V3.$( this.ID.IsKeyDown(ID.A) ? -150 : 0, 0, 0));
-	//if( this.ID.IsNewKeyPress(ID.SPACE) ) this.scrollFocus.Jump();
-	if (this.ID.IsKeyDown(ID.SPACE)) this.scrollFocus.Thrust( this.ID.TimePressed(ID.SPACE) );
+	if( this.ID.IsKeyDown(ID.D) ){ this.scrollFocus.MoveRight(); }
+	if( this.ID.IsKeyDown(ID.A) ){ this.scrollFocus.MoveLeft();  }
+	
+	//this.scrollFocus.AddForce(V3.$( this.ID.IsKeyDown(ID.D) ? 150 : 0, 0, 0));
+	//this.scrollFocus.AddForce(V3.$( this.ID.IsKeyDown(ID.A) ? -150 : 0, 0, 0));
+	//this.scrollFocus.AddForce(V3.$( 0, this.ID.IsKeyDown(ID.S) ? 150 : 0, 0));
+	//this.scrollFocus.AddForce(V3.$( 0, this.ID.IsKeyDown(ID.W) ? -550 : 0, 0));
+	if( this.ID.IsNewKeyPress(ID.SPACE) ) this.scrollFocus.Jump();
+	//if (this.ID.IsKeyDown(ID.SPACE)) this.scrollFocus.Thrust( this.ID.TimePressed(ID.SPACE) );
+	
 }

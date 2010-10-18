@@ -26,7 +26,7 @@ CVertex.prototype = {
 		//-------------------------------------------------
 		// radius check
 		//-------------------------------------------------
-		var D = V3.sub(xParticle.m_xP1, this.m_xPosition);
+		var D = V3.sub(xParticle.cpos, this.m_xPosition);
 
 		var d2 = V3.dot(D, D);
 
@@ -36,9 +36,11 @@ CVertex.prototype = {
 		if (d2 > r2)
 			return false;
 
+		xParticle.hasCollidedThisStep = true;
+
 		//if(CVertex.SMOOTH_CORNERS){
 		// t either returns false or a float
-		var t = VectorUtil.RaySphereIntersection(xParticle.m_xP1, xParticle.m_fRadius, this.m_xPosition, V3.neg(this.m_xNormal), 0.0, 1000.0);
+		var t = VectorUtil.RaySphereIntersection(xParticle.cpos, xParticle.m_fRadius, this.m_xPosition, V3.neg(this.m_xNormal), 0.0, 1000.0);
 		if (t) {
 			return xParticle.StaticCollisionResponse(this.m_xNormal, t);
 			

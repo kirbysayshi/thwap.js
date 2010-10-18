@@ -1,7 +1,7 @@
 function CLinConstraint(pA, pB){
 	this.m_pxPA = pA;			// the two particles
 	this.m_pxPB = pB;			// attached
-	this.m_fRestLength = V3.length(V3.sub(pA.m_xP1, pB.m_xP1));	// distance the particles should be
+	this.m_fRestLength = V3.length(V3.sub(pA.cpos, pB.cpos));	// distance the particles should be
 }
 
 CLinConstraint.prototype = {
@@ -36,8 +36,8 @@ CLinConstraint.prototype = {
 		//-----------------------------------------------------------
 		// relative position of particles
 		//-----------------------------------------------------------
-		var x1         = this.m_pxPA.m_xP1;
-		var x2         = this.m_pxPB.m_xP1;
+		var x1         = this.m_pxPA.cpos;
+		var x2         = this.m_pxPB.cpos;
 		var delta      = V3.sub(x2, x1);
 
 		var diff;

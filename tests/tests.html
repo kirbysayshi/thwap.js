@@ -30,15 +30,15 @@ test("Collide", function(){
 	var p1 = new CParticle( V3.$(1, 0, 0), 10, 100 );
 	var p2 = new CParticle( V3.$(2, 0, 0), 10, 100 );
 	equal(p1.Collide(p2), true, "Expect collision response to return true");
-	equal(p2.m_xP1[0], 2.190000057220459, "X value of particle 2 should be 2.190000057220459");
-	equal(p1.m_xP1[0], 0.8100000023841858, "X value of particle 1 should be 0.8100000023841858");	
+	equal(p2.cpos[0], 2.190000057220459, "X value of particle 2 should be 2.190000057220459");
+	equal(p1.cpos[0], 0.8100000023841858, "X value of particle 1 should be 0.8100000023841858");	
 });
 
 test("StaticCollisionResponse", function(){
 	expect(2);
 	var p1 = new CParticle( V3.$(0, 0, 0), 2, 1 );
 	equal(p1.StaticCollisionResponse(V3.$(1, 0, 0), 1), true, "Expect collision response to return true");
-	same(p1.m_xP1, V3.$(1, 0, 0), "Previous position should be 1, 0, 0");
+	same(p1.cpos, V3.$(1, 0, 0), "Previous position should be 1, 0, 0");
 });
 
 test("GetBoundingBox", function(){
@@ -54,8 +54,8 @@ test("Update", function(){
 	expect(2);
 	var p1 = new CParticle( V3.$(0, 0, 0), 2, 100 );
 	p1.Update(1);	
-	same(p1.m_xP1, V3.$(0, 0, 0), "Expect previous position to still be zero");
-	same(p1.m_xP0, V3.$(0, 0, 0), "Expect current position to still be zero");
+	same(p1.cpos, V3.$(0, 0, 0), "Expect previous position to still be zero");
+	same(p1.ppos, V3.$(0, 0, 0), "Expect current position to still be zero");
 });
 
 test("Update with Acceleration", function(){
@@ -63,8 +63,8 @@ test("Update with Acceleration", function(){
 	var p1 = new CParticle( V3.$(0, 0, 0), 2, 1 );
 	p1.AddForce( V3.$(1, 0, 0) );
 	p1.Update(1);
-	same(p1.m_xP1, V3.$(1, 0, 0), "Expect previous x position to increase by 1");
-	same(p1.m_xP0, V3.$(0, 0, 0), "Expect current position to still be zero");
+	same(p1.cpos, V3.$(1, 0, 0), "Expect previous x position to increase by 1");
+	same(p1.ppos, V3.$(0, 0, 0), "Expect current position to still be zero");
 });
 
 test("SetMass", function(){
@@ -113,7 +113,7 @@ test("RaySphereIntersection", function(){
 	var v = new CVertex(V3.$(580.23, 578.99, 0), V3.$(-0.836, -0.5493, 0));
 
 	equal(Math.round(1000 * VectorUtil.RaySphereIntersection(
-		xParticle.m_xP1, 
+		xParticle.cpos, 
 		xParticle.m_fRadius, 
 		v.m_xPosition, 
 		V3.neg(v.m_xNormal), 0.0, 1000.0)) / 1000, 7.165, "Expect RaySphereIntersection to be approximately 7.165");
@@ -129,7 +129,7 @@ test("Copy", function(){
 	b1.AddParticle( new CParticle( V3.$(0,0,0), 5, 1) );
 	b1.AddParticle( new CParticle( V3.$(10,0,0), 5, 1) );
 	var b2 = new CBody().Copy(b1);
-	b1.m_xParticles[0].m_xP0 = V3.$(1,0,0);
+	b1.m_xParticles[0].ppos = V3.$(1,0,0);
 	
 	notDeepEqual(b2.m_xParticles[0], b1.m_xParticles[0], "Particle 0 of each body should be different"); 
 });
@@ -200,9 +200,9 @@ test("Update", function(){
 	
 	equal(b1.FindConstraint(c), true, "Expect constraint to be found");
 	equal(c.m_fRestLength, 10, "Expect rest length of constraint to be 10");
-	notDeepEqual(p2.m_xP1, V3.$(10,0,0), "Expect p2 position to have changed to keep constraint valid");
-	deepEqual(p1.m_xP1, V3.$(0,0,0), "Expect particle 1 to be fixed prev position");
-	deepEqual(p1.m_xP0, V3.$(0,0,0), "Expect particle 1 to be fixed curr position");
+	notDeepEqual(p2.cpos, V3.$(10,0,0), "Expect p2 position to have changed to keep constraint valid");
+	deepEqual(p1.cpos, V3.$(0,0,0), "Expect particle 1 to be fixed prev position");
+	deepEqual(p1.ppos, V3.$(0,0,0), "Expect particle 1 to be fixed curr position");
 });
 
 module("CRigidBody.js");
@@ -263,7 +263,7 @@ test("Collide", function(){
 	var v = new CVertex(V3.$(0,0,0));
 	var p = new CParticle(V3.$(1,0,0), 5, 1);
 	equal(v.Collide(p), true, "Expect a collision between particle and vertex");
-	notDeepEqual(p.m_xP1, V3.$(0,0,0), "Expect particle to be moved as result of collision");
+	notDeepEqual(p.cpos, V3.$(0,0,0), "Expect particle to be moved as result of collision");
 });
 
 module("CMesh.js");

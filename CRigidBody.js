@@ -9,9 +9,9 @@ CRigidBody.prototype.SetRigidBodyConstraints = function() {
 	//-----------------------------------------------------------
 	// link particles to every others
 	//-----------------------------------------------------------
-	for(var i = 0; i < this.GetNumParticles(); i ++)
+	for(var i = 0; i < this.GetNumParticles(); i++)
 	{
-		for(var j = i+1; j < this.GetNumParticles(); j ++)
+		for(var j = i+1; j < this.GetNumParticles(); j++)
 		{
 			this.AddConstraint(new CLinConstraint(this.GetParticle(i), this.GetParticle(j)));
 		}

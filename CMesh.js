@@ -113,7 +113,7 @@ CMesh.prototype = {
 		//------------------------------------------------------------------
 		// relative position of particle to edge
 		//------------------------------------------------------------------
-		var D = V3.sub(xParticle.m_xP1, V0.m_xPosition);
+		var D = V3.sub(xParticle.cpos, V0.m_xPosition);
 
 		//------------------------------------------------------------------
 		// See where particle's prjection on edge is (before, after, or on edge)

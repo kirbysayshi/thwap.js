@@ -65,8 +65,8 @@ CParticle.prototype.Render = function(ctx, color, vOffset) {
 		+ Math.round(color[2]*255) + "," 
 		+ color[3] + ")";
 	ctx.beginPath();
-	ctx.arc( this.m_xP0[0] - vOffset[0]
-		, this.m_xP0[1] - vOffset[1]
+	ctx.arc( this.cpos[0] - vOffset[0]
+		, this.cpos[1] - vOffset[1]
 		, this.m_fRadius, 0, Math.PI*2, false );
 	ctx.fill();
 	
@@ -77,8 +77,8 @@ CParticle.prototype.Render = function(ctx, color, vOffset) {
 		+ Math.round(color[2]*255) + "," 
 		+ color[3] + ")";
 	ctx.beginPath();
-	ctx.arc( this.m_xP0[0] - vOffset[0]
-		, this.m_xP0[1] - vOffset[1]
+	ctx.arc( this.cpos[0] - vOffset[0]
+		, this.cpos[1] - vOffset[1]
 		, 2, 0, Math.PI*2, false );
 	ctx.fill();
 
@@ -89,10 +89,10 @@ CLinConstraint.prototype.Render = function(ctx, vOffset){
 		return;
 	ctx.strokeStyle = "#999999";	
 	ctx.beginPath();
-	ctx.moveTo(this.m_pxPA.m_xP1[0] - vOffset[0]
-		, this.m_pxPA.m_xP1[1] - vOffset[1]);
-	ctx.lineTo(this.m_pxPB.m_xP1[0] - vOffset[0]
-		, this.m_pxPB.m_xP1[1] - vOffset[1]);
+	ctx.moveTo(this.m_pxPA.cpos[0] - vOffset[0]
+		, this.m_pxPA.cpos[1] - vOffset[1]);
+	ctx.lineTo(this.m_pxPB.cpos[0] - vOffset[0]
+		, this.m_pxPB.cpos[1] - vOffset[1]);
 	ctx.stroke();
 }
 
