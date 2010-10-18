@@ -36,7 +36,7 @@ CBasic.prototype = {
 	, InitBasicRenderer: function(width, height, targetFrameRate){
 		this.viewport = V3.$(width, height, 0);
 		this.targetFrameRate = targetFrameRate;
-		this.deltaT = 1 / targetFrameRate;
+		this.deltaT = 1 / targetFrameRate*2;
 		this.canvas = document.createElement("canvas");
 		this.canvas.setAttribute("width",  width);
 		this.canvas.setAttribute("height", height);

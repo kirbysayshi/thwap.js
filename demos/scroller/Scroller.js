@@ -7,7 +7,7 @@ function Scroller(){
 	
 	this.ID = new ID(false);
 	
-	this.InitBasicRenderer(640, 480, 30);
+	this.InitBasicRenderer(640, 480, 60);
 	this.InitBodies();
 	this.StartBasicRun(this);
 }
