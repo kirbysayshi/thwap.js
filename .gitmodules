@@ -1,0 +1,3 @@
+[submodule "vendor/ID"]
+	path = vendor/ID
+	url = git@github.com:kirbysayshi/ID.js.git 
