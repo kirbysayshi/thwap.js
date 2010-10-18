@@ -57,4 +57,5 @@ CLinConstraint.prototype = {
 		V3.add(x1, V3.scale(delta, invmass1), x1);
 		V3.sub(x2, V3.scale(delta, invmass2), x2);
 	}
+	, Render: function(ctx){}
 };

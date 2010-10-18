@@ -248,4 +248,6 @@ CBody.prototype = {
 		}
 		return V3.scale(v, 1/this.m_iNumParticles);
 	}
+	, Render: function(ctx){ }
+	, RenderBoundingSphere: function(ctx){ }
 };

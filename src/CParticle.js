@@ -207,4 +207,5 @@ CParticle.prototype = {
 	, GetVelocity: function(){
 		return V3.sub(this.cpos, this.ppos);
 	}
+	, Render: function(ctx, color) {}
 };

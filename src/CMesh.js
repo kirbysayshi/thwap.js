@@ -195,4 +195,6 @@ CMesh.prototype = {
 
 		return (d2 < r2);
 	}
+	, Render: function(ctx){ }
+	, RenderBoundingSphere: function(ctx){ }
 };

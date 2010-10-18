@@ -150,6 +150,7 @@ CBodyList.prototype = {
 			}
 		}
 	}
+	, Render: function(ctx){}
 	
 };
 
